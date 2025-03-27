@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CVD Risk Score Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header img {
+            width: 100px; /* ปรับขนาดโลโก้ตามต้องการ */
+            height: auto;
+        }
+        .header h2 {
+            font-size: 24px;
+            color: #333;
+        }
+        .form-container {
+            max-width: 500px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .form-container label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        .form-container input, .form-container select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .form-container button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .form-container button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Section with Logo and Center Name -->
+    <div class="header">
+        <!-- โลโก้ -->
+        <img src="logo.png" alt="Logo"> <!-- ใส่ URL หรือพาธของโลโก้ที่คุณต้องการ -->
+        <!-- ชื่อศูนย์บริการสาธารณสุข -->
+        <h2>ศูนย์บริการสาธารณสุขที่ 8 บางเขน</h2>
+    </div>
+
+    <h1>เครื่องคำนวณความเสี่ยงโรคหัวใจ (CVD Risk Score)</h1>
+
+    <div class="form-container">
+        <form id="cvdForm">
+            <label for="age">อายุ:</label>
+            <input type="number" id="age" name="age" required>
+
+            <label for="sex">เพศ:</label>
+            <select id="sex" name="sex" required>
+                <option value="ชาย">ชาย</option>
+                <option value="หญิง">หญิง</option>
+            </select>
+
+            <label for="cholesterol">คอเลสเตอรอล (mg/dL):</label>
+            <input type="number" id="cholesterol" name="cholesterol" required>
+
+            <label for="bloodPressure">ความดันโลหิต (mmHg):</label>
+            <input type="number" id="bloodPressure" name="bloodPressure" required>
+
+            <label for="smoker">การสูบบุหรี่:</label>
+            <select id="smoker" name="smoker" required>
+                <option value="สูบบุหรี่">สูบบุหรี่</option>
+                <option value="ไม่สูบบุหรี่">ไม่สูบบุหรี่</option>
+            </select>
+
+            <label for="diabetes">โรคเบาหวาน:</label>
+            <select id="diabetes" name="diabetes" required>
+                <option value="เป็นโรคเบาหวาน">เป็นโรคเบาหวาน</option>
+                <option value="ไม่เป็นโรคเบาหวาน">ไม่เป็นโรคเบาหวาน</option>
+            </select>
+
+            <button type="submit">คำนวณความเสี่ยง</button>
+        </form>
+
+        <div id="result" style="display:none; margin-top: 20px;">
+            <h3>ผลการคำนวณ CVD Risk Score</h3>
+            <p id="resultMessage"></p>
+        </div>
+    </div>
+
+    <script>
+        // ฟังก์ชันคำนวณคะแนน CVD Risk
+        function calculateCvdRisk(age, sex, cholesterol, bloodPressure, smoker, diabetes) {
+            let score = 0;
+
+            // คำนวณคะแนนตามอายุ
+            if (age >= 45) score += 2;
+            else if (age >= 35) score += 1;
+
+            // คำนวณคะแนนตามเพศ
+            if (sex === 'ชาย') score += 1;
+
+            // คำนวณคะแนนตามคอเลสเตอรอล
+            if (cholesterol > 240) score += 3;
+            else if (cholesterol > 200) score += 2;
+
+            // คำนวณคะแนนตามความดันโลหิต
+            if (bloodPressure > 140) score += 3;
+            else if (bloodPressure > 120) score += 2;
+
+            // คำนวณคะแนนตามการสูบบุหรี่
+            if (smoker === 'สูบบุหรี่') score += 2;
+
+            // คำนวณคะแนนตามโรคเบาหวาน
+            if (diabetes === 'เป็นโรคเบาหวาน') score += 2;
+
+            // ประเมินความเสี่ยง
+            let resultMessage = "ผลการคำนวณ CVD Risk Score ของคุณ: " + score + ". ";
+            if (score <= 4) {
+                resultMessage += "คุณมีความเสี่ยงต่ำ.";
+            } else if (score <= 8) {
+                resultMessage += "คุณมีความเสี่ยงปานกลาง.";
+            } else {
+                resultMessage += "คุณมีความเสี่ยงสูง.";
+            }
+
+            return resultMessage;
+        }
+
+        // เมื่อฟอร์มถูกส่ง
+        document.getElementById('cvdForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            // ดึงข้อมูลจากฟอร์ม
+            const age = parseInt(document.getElementById('age').value);
+            const sex = document.getElementById('sex').value;
+            const cholesterol = parseFloat(document.getElementById('cholesterol').value);
+            const bloodPressure = parseFloat(document.getElementById('bloodPressure').value);
+            const smoker = document.getElementById('smoker').value;
+            const diabetes = document.getElementById('diabetes').value;
+
+            // คำนวณ CVD Risk Score
+            const resultMessage = calculateCvdRisk(age, sex, cholesterol, bloodPressure, smoker, diabetes);
+
+            // แสดงผลลัพธ์
+            document.getElementById('resultMessage').innerText = resultMessage;
+            document.getElementById('result').style.display = 'block';
+        });
+    </script>
+</body>
+</html>
